@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ERC7827 JS Library Example</title>
+    <style>
+        body { font-family: sans-serif; padding: 2em; line-height: 1.6; }
+        input, button { font-size: 1em; padding: 0.5em; margin: 0.2em; }
+        .hidden { display: none; }
+        #results { white-space: pre-wrap; background-color: #f4f4f4; padding: 1em; margin-top: 1em; }
+    </style>
+</head>
+<body>
+    <h1>ERC7827 JS Library Example</h1>
+    
+    <button id="connectButton">Connect Wallet</button>
+    <p id="walletInfo" class="hidden">Connected: <span id="walletAddress"></span></p>
+
+    <div id="contractUi" class="hidden">
+        <h2>Contract Interaction</h2>
+        <p>Contract Address: <span id="contractAddress"></span></p>
+
+        <hr>
+        <h3>Read Functions</h3>
+        <button id="getJsonButton">Get JSON</button>
+        <button id="getTotalKeysButton">Get Total Keys</button>
+        <br>
+        <input type="text" id="versionKeyInput" placeholder="Key for version">
+        <button id="getVersionButton">Get Version History</button>
+
+        <hr>
+        <h3>Write Functions (Owner Only)</h3>
+        <input type="text" id="writeKeyInput" placeholder="Key (e.g., name)">
+        <input type="text" id="writeValueInput" placeholder="Value (e.g., Alice)">
+        <label><input type="checkbox" id="replaceCheckbox"> Replace if exists</label>
+        <button id="writeButton">Write</button>
+
+        <div id="results"></div>
+    </div>
+
+    <script type="module" src="app.js"></script>
+</body>
+</html>
