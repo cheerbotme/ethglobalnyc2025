@@ -1,0 +1,39 @@
+# Environment variables
+.env
+
+# Dependencies
+node_modules/
+lib/
+
+# Build artifacts
+cache/
+out/
+
+# IDE specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Foundry specific
+forge-std/
+
+# Local Nethermind DB
+nethermind_db/
+
+# Hardhat
+.hardhat/
+hardhat-deploy/
+
+# Coverage
+coverage/
+coverage.json
+typechain-types/
+
+# Misc
+.DS_Store
+*.log
+
+# Local environment files
+.env.*.local
+!.env.example
