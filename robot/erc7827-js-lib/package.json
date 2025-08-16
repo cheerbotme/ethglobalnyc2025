@@ -1,0 +1,17 @@
+{
+  "name": "erc7827-js-lib",
+  "version": "1.0.0",
+  "description": "A JavaScript library for ERC7827 smart contracts.",
+  "main": "src/ERC7827.js",
+  "scripts": {
+    "test": "mocha test/**/*.js"
+  },
+  "devDependencies": {
+    "chai": "^4.3.10",
+    "ethers": "^6.7.0",
+    "mocha": "^10.2.0"
+  },
+  "dependencies": {
+    "@ethersproject/experimental": "^5.8.0"
+  }
+}
