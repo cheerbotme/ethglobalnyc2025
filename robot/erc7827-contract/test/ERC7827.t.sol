@@ -16,11 +16,11 @@ contract ERC7827Test is Test {
         erc7827 = new ERC7827();
     }
 
-    function test_initialJsonIsEmpty() public {
+    function test_initialJsonIsEmpty() public view {
         assertEq(erc7827.json(), "{}");
     }
 
-    function test_initialVersionIsEmpty() public {
+    function test_initialVersionIsEmpty() public view {
         assertEq(erc7827.version("anykey"), "[]");
     }
 
