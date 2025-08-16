@@ -1,0 +1,3 @@
+[submodule "robot/erc7827-contract/lib/openzeppelin-contracts"]
+	path = robot/erc7827-contract/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
