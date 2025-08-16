@@ -2,29 +2,26 @@
 pragma solidity ^0.8.20;
 
 import { IERC7827 } from "./IERC7827.sol";
-import { Ownable } from "openzeppelin-contracts/contracts/access/Ownable.sol";
-import { Ownable } from "openzeppelin-contracts/contracts/access/Ownable.sol";
 
 /**
- * @title ERC7827 JSON Smart Contract with Value Version Control
+ * @title ERC7827_NoOwner - A Permissionless Version of ERC7827
  * @dev Manages a JSON object with version-controlled values, accessible via a REST-like interface.
+ *      Write operations are permissionless and can be called by any account.
  */
-contract ERC7827 is IERC7827, Ownable {
+contract ERC7827_NoOwner is IERC7827 {
     mapping(string => string[]) private _versions;
     mapping(string => bool) private _hasKey;
     string[] private _keys;
 
-    constructor() Ownable(msg.sender) {}
-
     /**
-     * @notice Writes new values to the JSON object.
+     * @notice Writes new values to the JSON object. This function is permissionless.
      * @inheritdoc IERC7827
      */
     function write(
         string[] calldata keys,
         string[] calldata values,
         bool replace
-    ) external onlyOwner {
+    ) external {
         require(keys.length == values.length, "Array lengths must match");
 
         for (uint i = 0; i < keys.length; i++) {
@@ -98,30 +95,11 @@ contract ERC7827 is IERC7827, Ownable {
 
         return string(jsonArray);
     }
+    
+    // --- Internal Helper Functions ---
 
-    function totalKeys() external view returns (uint256) {
-        return _keys.length;
-    }
-
-    /**
-     * @notice Returns a value for a key at a specific version index.
-     * @param key The JSON key.
-     * @param versionIndex The index in the version history array.
-     * @return The string value at the specified version index.
-     */
-    function valueAt(string calldata key, uint256 versionIndex) external view returns (string memory) {
-        require(_hasKey[key], "Key does not exist");
-        string[] storage keyVersions = _versions[key];
-        require(versionIndex < keyVersions.length, "Version index out of bounds");
-        return keyVersions[versionIndex];
-    }
-
-    /**
-     * @dev Internal function to wrap a string in quotes if it's not a JSON primitive.
-     */
     function _quote(string memory s) private pure returns (string memory) {
         bytes memory b = bytes(s);
-        // Crude check for JSON primitives (number, boolean, null) or already-quoted strings/objects/arrays
         if (
             (b.length > 0 && (b[0] == '{' || b[0] == '[' || b[0] == '"')) ||
             _isNumeric(s) ||
@@ -133,15 +111,9 @@ contract ERC7827 is IERC7827, Ownable {
         return string(abi.encodePacked('"', _escape(s), '"'));
     }
 
-    /**
-     * @dev Escapes characters in a string for JSON compatibility.
-     */
     function _escape(string memory s) private pure returns (string memory) {
-        // This is a simplified escape function. A production implementation
-        // would need to handle more characters (e.g., \\, \b, \f, \n, \r, \t, and unicode).
-        // For this example, we will focus on escaping double quotes.
         bytes memory b = bytes(s);
-        bytes memory result = new bytes(b.length * 2); // Worst case
+        bytes memory result = new bytes(b.length * 2);
         uint j = 0;
         for (uint i = 0; i < b.length; i++) {
             if (b[i] == '"') {
@@ -157,31 +129,20 @@ contract ERC7827 is IERC7827, Ownable {
         return string(finalResult);
     }
 
-    /**
-     * @dev Checks if a string represents a boolean.
-     */
     function _isBoolean(string memory s) private pure returns (bool) {
         return keccak256(abi.encodePacked(s)) == keccak256("true") || keccak256(abi.encodePacked(s)) == keccak256("false");
     }
 
-    /**
-     * @dev Checks if a string represents null.
-     */
     function _isNull(string memory s) private pure returns (bool) {
         return keccak256(abi.encodePacked(s)) == keccak256("null");
     }
 
-    /**
-     * @dev Checks if a string is numeric.
-     */
     function _isNumeric(string memory s) private pure returns (bool) {
         bytes memory b = bytes(s);
         if (b.length == 0) return false;
         for (uint i = 0; i < b.length; i++) {
-            // Allow digits, optional leading minus, and one decimal point.
             bool isDigit = (b[i] >= 0x30 && b[i] <= 0x39);
             bool isMinus = (i == 0 && b[i] == '-');
-            // Simplified: doesn't handle decimal points for this example
             if (!isDigit && !isMinus) {
                 return false;
             }
