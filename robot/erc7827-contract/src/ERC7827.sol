@@ -3,11 +3,11 @@ pragma solidity ^0.8.20;
 
 import { IERC7827 } from "./IERC7827.sol";
 import { Ownable } from "openzeppelin-contracts/contracts/access/Ownable.sol";
-import { Ownable } from "openzeppelin-contracts/contracts/access/Ownable.sol";
 
 /**
- * @title ERC7827 JSON Smart Contract with Value Version Control
- * @dev Manages a JSON object with version-controlled values, accessible via a REST-like interface.
+ * @title ERC7827 - Versioned JSON Storage
+ * @notice A minimal, gas-efficient contract for storing and versioning JSON data on-chain.
+ * @dev Supports CRUD operations with version history for each key.
  */
 contract ERC7827 is IERC7827, Ownable {
     mapping(string => string[]) private _versions;
@@ -134,27 +134,39 @@ contract ERC7827 is IERC7827, Ownable {
     }
 
     /**
-     * @dev Escapes characters in a string for JSON compatibility.
+     * @notice Escapes special characters in a string for JSON compatibility.
+     * @dev Handles quotes and backslashes. Optimized for gas efficiency.
+     * @param s String to escape
+     * @return string Escaped string safe for JSON
      */
     function _escape(string memory s) private pure returns (string memory) {
-        // This is a simplified escape function. A production implementation
-        // would need to handle more characters (e.g., \\, \b, \f, \n, \r, \t, and unicode).
-        // For this example, we will focus on escaping double quotes.
         bytes memory b = bytes(s);
-        bytes memory result = new bytes(b.length * 2); // Worst case
-        uint j = 0;
+        uint extraLength = 0;
+        
+        // First pass: count characters that need escaping
         for (uint i = 0; i < b.length; i++) {
-            if (b[i] == '"') {
+            if (b[i] == '"' || b[i] == '\\') {
+                extraLength++;
+            }
+        }
+        
+        if (extraLength == 0) {
+            return s; // No escaping needed
+        }
+        
+        // Allocate result with exact size needed
+        bytes memory result = new bytes(b.length + extraLength);
+        uint j = 0;
+        
+        // Second pass: build the escaped string
+        for (uint i = 0; i < b.length; i++) {
+            if (b[i] == '"' || b[i] == '\\') {
                 result[j++] = '\\';
             }
             result[j++] = b[i];
         }
-
-        bytes memory finalResult = new bytes(j);
-        for (uint i = 0; i < j; i++) {
-            finalResult[i] = result[i];
-        }
-        return string(finalResult);
+        
+        return string(result);
     }
 
     /**
@@ -172,17 +184,25 @@ contract ERC7827 is IERC7827, Ownable {
     }
 
     /**
-     * @dev Checks if a string is numeric.
+     * @notice Checks if a string represents a valid number.
+     * @dev Supports integers, negative numbers, and decimals.
+     * @param s Input string to validate
+     * @return bool True if the string is a valid number
      */
     function _isNumeric(string memory s) private pure returns (bool) {
         bytes memory b = bytes(s);
         if (b.length == 0) return false;
+        
+        uint decimalCount = 0;
         for (uint i = 0; i < b.length; i++) {
-            // Allow digits, optional leading minus, and one decimal point.
             bool isDigit = (b[i] >= 0x30 && b[i] <= 0x39);
             bool isMinus = (i == 0 && b[i] == '-');
-            // Simplified: doesn't handle decimal points for this example
-            if (!isDigit && !isMinus) {
+            bool isDecimal = (b[i] == '.');
+            
+            if (isDecimal) {
+                decimalCount++;
+                if (decimalCount > 1) return false; // Only one decimal point allowed
+            } else if (!isDigit && !isMinus) {
                 return false;
             }
         }
