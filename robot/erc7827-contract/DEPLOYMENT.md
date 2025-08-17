@@ -17,6 +17,52 @@ This document provides instructions for deploying the ERC7827 contract to variou
    sh -ci "$(curl -fsSL https://storage.googleapis.com/flow-cli/install.sh)"
    ```
 
+## Local Testing with Anvil
+
+Anvil is a local testnet node included with Foundry that allows you to test your contracts in a local environment.
+
+### Starting Anvil
+
+```bash
+# Start Anvil with default settings (creates 10 test accounts with 10,000 ETH each)
+anvil
+```
+
+If you encounter a port conflict, you can specify a different port:
+
+```bash
+anvil -p 8545  # Use port 8545 instead of default 8545
+```
+
+### Deploying to Local Anvil Node
+
+In a new terminal:
+
+```bash
+# Set the RPC URL to your local Anvil node
+export ANVIL_RPC_URL=http://127.0.0.1:8545
+
+# Use the first Anvil private key for deployment
+export PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+
+# Deploy to local Anvil
+forge script script/Deploy.s.sol --rpc-url $ANVIL_RPC_URL --broadcast
+```
+
+### Forking Mainnet for Testing
+
+You can also fork a mainnet (like Ethereum) for more realistic testing:
+
+```bash
+# Fork Ethereum mainnet
+anvil --fork-url https://eth-mainnet.g.alchemy.com/v2/YOUR_API_KEY
+
+# Or fork Flow mainnet
+anvil --fork-url https://mainnet.evm.nodes.onflow.org
+
+# Then deploy as shown above
+```
+
 ## Environment Setup
 
 Create a `.env` file in the project root with the following variables:
@@ -66,56 +112,68 @@ Note: This requires implementing the contract in Cadence first.
 
 ## Verifying Contracts
 
-### Sepolia
+This section outlines the commands used to verify the deployed `ERC7827` smart contract on different blockchain explorers.
 
-After deployment, verify your contract on Etherscan:
+### Katana Tatara Testnet
+
+To verify the contract on the Katana Tatara testnet explorer, use the following command. You will need to replace `<DEPLOYED_ADDRESS>` with the actual address of your deployed contract.
 
 ```bash
-forge verify-contract \
-    --chain-id 11155111 \
-    --num-of-optimizations 200 \
-    --watch \
-    --constructor-args $(cast abi-encode "constructor()" "") \
-    --compiler-version v0.8.20+commit.a1b79de6 \
-    --etherscan-api-key $ETHERSCAN_API_KEY \
-    <DEPLOYED_ADDRESS> \
-    src/ERC7827.sol:ERC7827
+forge verify-contract <DEPLOYED_ADDRESS> src/ERC7827.sol:ERC7827 --chain-id 747 --verifier blockscout --verifier-url https://explorer.tatara.katana.network/api -vvvv
 ```
+
+**Example:**
+```bash
+forge verify-contract 0x77331C208e7a6d4C05b0A0f87dB2Df9f154321a8 src/ERC7827.sol:ERC7827 --chain-id 747 --verifier blockscout --verifier-url https://explorer.tatara.katana.network/api -vvvv
+```
+
+### Flow Mainnet
+
+To verify the contract on the Flow mainnet explorer, use the following command. Replace `<DEPLOYED_ADDRESS>` with your contract's address.
+
+```bash
+forge verify-contract <DEPLOYED_ADDRESS> src/ERC7827.sol:ERC7827 --chain-id 747 --verifier blockscout --verifier-url https://evm.flowscan.io/api -vvvv
+```
+
+**Example:**
+```bash
+forge verify-contract 0x04B386e36F89E5bB568295779089E91ded070057 src/ERC7827.sol:ERC7827 --chain-id 747 --verifier blockscout --verifier-url https://evm.flowscan.io/api -vvvv
+```
+
+
 
 ## Network Information
 
 ### Ethereum Sepolia Testnet
 - **Chain ID**: 11155111
-- **RPC URL**: 
-  - Infura: `https://sepolia.infura.io/v3/YOUR-PROJECT-ID`
-  - Alchemy: `https://eth-sepolia.g.alchemy.com/v2/YOUR-API-KEY`
-  - Public: `https://rpc.sepolia.org`
-- **Explorer**: [Etherscan](https://sepolia.etherscan.io)
-- **Faucet**: [Alchemy](https://sepoliafaucet.com/), [QuickNode](https://faucet.quicknode.com/ethereum/sepolia)
-- **Wrapped ETH**: 0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9
-- **Chain Name**: Sepolia
+- **RPC URL**: `https://rpc.sepolia.org`
+- **Explorer**: [Sepolia Explorer](https://sepolia.etherscan.io/)
+- **Faucet**: [Alchemy Sepolia Faucet](https://sepoliafaucet.com/)
 - **Currency Symbol**: ETH
 - **Block Time**: ~12 seconds
 
-### Katana (Ronin) Testnet (Saigon)
-- **Chain ID**: 2021
-- **RPC URL**: `https://saigon-testnet.roninchain.com/rpc`
-- **Explorer**: [Saigon Explorer](https://saigon-app.roninchain.com/)
-- **Faucet**: [Ronin Faucet](https://faucet.roninchain.com/)
-- **Wrapped RON**: 0xc99a6a985ed2cac1ef41640596c5a5f9f4e19ef5
-- **Chain Name**: Ronin Saigon Testnet
-- **Currency Symbol**: tRON
-- **Block Time**: ~3 seconds
+### Katana Mainnet
+- **Chain ID**: 747474
+- **RPC URL**: `https://rpc.katana.network/`
+- **Explorer**: [KatanaScan](https://katanascan.com/)
+- **Currency Symbol**: KAT
+- **Block Time**: ~2 seconds
 
-### Katana (Ronin) Mainnet
-- **Chain ID**: 2020
-- **RPC URL**: `https://api.roninchain.com/rpc`
-- **Explorer**: [Ronin Explorer](https://app.roninchain.com/)
-- **Documentation**: [Ronin Docs](https://docs.roninchain.com/)
-- **Chain Name**: Ronin Mainnet
-- **Currency Symbol**: RON
-- **Block Time**: ~3 seconds
-- **Wrapped RON**: 0xc99a6a985ed2cac1ef41640596c5a5f9f4e19ef5
+### Katana Tatara Testnet
+- **Chain ID**: 747
+- **RPC URL**: `https://rpc.tatara.katana.network/`
+- **Explorer**: [Tatara Explorer](https://tatara.katana.network/)
+- **Faucet**: [Katana Faucet](https://faucet.katana.network/)
+- **Currency Symbol**: tKAT
+- **Block Time**: ~2 seconds
+
+### Katana Bokuto Testnet
+- **Chain ID**: 1261120
+- **RPC URL**: `https://rpc.bokuto.katana.network/`
+- **Explorer**: [Bokuto Explorer](https://bokuto.katana.network/)
+- **Faucet**: [Katana Faucet](https://faucet.katana.network/)
+- **Currency Symbol**: tKAT
+- **Block Time**: ~2 seconds
 
 ### Flow EVM Testnet
 - **Chain ID**: 356256156

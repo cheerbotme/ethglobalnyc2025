@@ -116,6 +116,18 @@ contract ERC7827 is IERC7827, Ownable {
         return keyVersions[versionIndex];
     }
 
+
+
+    /**
+     * @notice Returns the latest version number of a specific key.
+     * @param key The JSON key.
+     * @return The latest version number.
+     */
+    function latestVersion(string calldata key) external view returns (uint256) {
+        require(_hasKey[key], "Key does not exist");
+        return _versions[key].length;
+    }
+
     /**
      * @dev Internal function to wrap a string in quotes if it's not a JSON primitive.
      */

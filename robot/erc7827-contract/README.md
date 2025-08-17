@@ -62,32 +62,46 @@ forge script script/Deploy.s.sol --rpc-url http://127.0.0.1:8545 --broadcast -vv
    forge script script/Deploy.s.sol:Deploy --rpc-url $SEPOLIA_RPC_URL --broadcast --verify -vvvv
    ```
 
-### Deploy to Katana (Ronin Testnet)
+### Deploy to Katana Mainnet
 
 1. Set your environment variables:
    ```bash
-   export KATANA_RPC="https://saigon-testnet.roninchain.com/rpc"
+   export KATANA_RPC="https://rpc.katana.network/"
    export KATANA_PRIVATE_KEY="your-private-key"
    ```
 
 2. Deploy the contract:
    ```bash
-   # Deploy to Katana Testnet (Saigon)
+   # Deploy to Katana Mainnet
    forge script script/DeployKatana.s.sol:DeployKatana --rpc-url $KATANA_RPC --broadcast -vvvv
    ```
 
-### Deploy to Katana Mainnet (Ronin)
+### Deploy to Katana Tatara Testnet
 
 1. Set your environment variables:
    ```bash
-   export KATANA_MAINNET_RPC="https://api.roninchain.com/rpc"
-   export KATANA_MAINNET_PRIVATE_KEY="your-private-key"
+   export TATARA_RPC="https://rpc.tatara.katana.network/"
+   export TATARA_PRIVATE_KEY="your-private-key"
    ```
 
 2. Deploy the contract:
    ```bash
-   # Deploy to Katana Mainnet
-   forge script script/DeployKatanaMainnet.s.sol:DeployKatanaMainnet --rpc-url $KATANA_MAINNET_RPC --broadcast -vvvv
+   # Deploy to Katana Tatara Testnet
+   forge script script/DeployTatara.s.sol:DeployTatara --rpc-url $TATARA_RPC --broadcast -vvvv
+   ```
+
+### Deploy to Katana Bokuto Testnet
+
+1. Set your environment variables:
+   ```bash
+   export BOKUTO_RPC="https://rpc.bokuto.katana.network/"
+   export BOKUTO_PRIVATE_KEY="your-private-key"
+   ```
+
+2. Deploy the contract:
+   ```bash
+   # Deploy to Katana Bokuto Testnet
+   forge script script/DeployBokuto.s.sol:DeployBokuto --rpc-url $BOKUTO_RPC --broadcast -vvvv
    ```
 
 ### Deploy to Flow Testnet
