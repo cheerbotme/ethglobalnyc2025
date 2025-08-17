@@ -1,6 +1,25 @@
 # The Flow x402 Cheerbot aka the ETHGlobal NYC 2025 Cheerbot Build
 
+We are the 3D printer team! 
+Cheerbot is a cute lil robo guy meant to bring cheer to lives and livestreams
 <img width="1024" height="1024" alt="ETHGlobal_Cheerbot" src="https://github.com/user-attachments/assets/12a70025-8231-421d-aead-2ce2e8177420" />
+
+# Sponsors
+
+## Flow
+- Built on Flow! Live on mainnet! Using our own EIP, ERC7287 to configure state in a visible manner. 
+
+  ERC7827 deployed at: 0x04B386e36F89E5bB568295779089E91ded070057
+  Network: Flow Mainnet
+  Chain ID: 747
+
+## Katana 
+- Built on Katana. Live on Tatara! Backup data store for kill switch for robot using our own EIP and ERC7287 impl.
+  ERC7827 deployed to: 0x77331C208e7a6d4C05b0A0f87dB2Df9f154321a8
+  Network: Katana Tatara Testnet
+
+## Nora 
+- Heavy use of Nora for coding up our smart contracts and tests. Fed it our EIP and worked to iteratively refine our contract. We had some issues with extended sessions
 
 ## contextual links
 
