@@ -1,7 +1,7 @@
 # The Flow x402 Cheerbot aka the ETHGlobal NYC 2025 Cheerbot Build
 
-We are the 3D printer team! 
-Cheerbot is a cute lil robo guy meant to bring cheer to lives and livestreams
+### We are the 3D printer team!   
+### Cheerbot is a cute lil robo guy meant to bring cheer to lives and livestreams   
 <img width="1024" height="1024" alt="ETHGlobal_Cheerbot" src="https://github.com/user-attachments/assets/12a70025-8231-421d-aead-2ce2e8177420" />
 
 # Sponsors
