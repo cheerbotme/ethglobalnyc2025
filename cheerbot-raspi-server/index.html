@@ -134,10 +134,30 @@
       const messageInput = document.getElementById('message-input');
       const chatMessages = document.getElementById('chat-messages');
 
+      // Blockchain configuration
+      const BLOCKCHAINS = {
+        flow: {
+          id: 'flow',
+          name: 'Flow Mainnet',
+          color: 'blue',
+          contractAddress: '0x04B386e36F89E5bB568295779089E91ded070057',
+          chainId: 747,
+          network: 'flow-mainnet-evm'
+        },
+        katana: {
+          id: 'katana',
+          name: 'Katana Tatara',
+          color: 'purple',
+          contractAddress: '0x77331C208e7a6d4C05b0A0f87dB2Df9f154321a8',
+          chainId: 129399,
+          network: 'katana-tatara-testnet'
+        }
+      };
+
       // Handle chat form submission
-      chatForm.addEventListener('submit', (e) => {
+      chatForm?.addEventListener('submit', (e) => {
         e.preventDefault();
-        const message = messageInput.value.trim();
+        const message = messageInput?.value?.trim();
         if (message) {
           socket.emit('message', message);
           messageInput.value = '';
@@ -146,6 +166,7 @@
 
       // Handle incoming chat messages
       socket.on('message', (data) => {
+        if (!chatMessages) return;
         const messageElement = document.createElement('div');
         messageElement.className = 'mb-2 p-2 bg-gray-50 rounded';
         messageElement.textContent = `${data.messenger}: ${data.message}`;
@@ -157,7 +178,6 @@
       const formatJsonForDisplay = (json) => {
         if (!json) return 'No data available';
         try {
-          // Handle both string and object JSON
           const data = typeof json === 'string' ? JSON.parse(json) : json;
           if (Object.keys(data).length === 0) return '{}';
           return JSON.stringify(data, null, 2);
@@ -166,73 +186,52 @@
         }
       };
 
-      // Handle blockchain data updates
-      socket.on('blockchain-update', (data) => {
-        // Update Flow data
-        if (data.flow) {
-          const flowUpdated = document.getElementById('flow-updated');
-          if (flowUpdated) {
-            flowUpdated.textContent = formatTimestamp(data.timestamp);
-          }
-          
-          // Update network info if available
-          if (data.flow._metadata) {
-            const flowNetwork = document.getElementById('flow-network');
-            const flowChainId = document.getElementById('flow-chain-id');
-            
-            if (flowNetwork) flowNetwork.textContent = data.flow._metadata.network || 'Unknown';
-            if (flowChainId) flowChainId.textContent = data.flow._metadata.chainId || 'Unknown';
-          }
-          
-          // Show raw JSON data or error
-          const flowJsonElement = document.getElementById('flow-json');
-          if (flowJsonElement) {
-            if (data.flow.error) {
-              flowJsonElement.textContent = `Error: ${data.flow.error}`;
-              flowJsonElement.classList.add('text-red-500');
-            } else {
-              flowJsonElement.textContent = formatJsonForDisplay(data.flow.data || data.flow);
-              flowJsonElement.classList.remove('text-red-500');
-            }
-          }
-        }
-        
-        // Update Katana data
-        if (data.katana) {
-          const katanaUpdated = document.getElementById('katana-updated');
-          if (katanaUpdated) {
-            katanaUpdated.textContent = formatTimestamp(data.timestamp);
-          }
-          
-          // Update network info if available
-          if (data.katana._metadata) {
-            const katanaNetwork = document.getElementById('katana-network');
-            const katanaChainId = document.getElementById('katana-chain-id');
-            
-            if (katanaNetwork) katanaNetwork.textContent = data.katana._metadata.network || 'Unknown';
-            if (katanaChainId) katanaChainId.textContent = data.katana._metadata.chainId || 'Unknown';
-          }
-          
-          // Show raw JSON data or error
-          const katanaJsonElement = document.getElementById('katana-json');
-          if (katanaJsonElement) {
-            if (data.katana.error) {
-              katanaJsonElement.textContent = `Error: ${data.katana.error}`;
-              katanaJsonElement.classList.add('text-red-500');
-            } else {
-              katanaJsonElement.textContent = formatJsonForDisplay(data.katana.data || data.katana);
-              katanaJsonElement.classList.remove('text-red-500');
-            }
-          }
-        }
-      });
-
       // Format timestamp
-      function formatTimestamp(timestamp) {
+      const formatTimestamp = (timestamp) => {
         if (!timestamp) return '-';
         const date = new Date(timestamp);
         return date.toLocaleTimeString();
-      }
+      };
+
+      // Update blockchain card UI
+      const updateBlockchainCard = (chainId, data) => {
+        const chain = BLOCKCHAINS[chainId];
+        if (!chain) return;
+
+        // Update last updated time
+        const updatedElement = document.getElementById(`${chainId}-updated`);
+        if (updatedElement) {
+          updatedElement.textContent = formatTimestamp(data.timestamp);
+        }
+
+        // Update network info
+        const networkElement = document.getElementById(`${chainId}-network`);
+        const chainIdElement = document.getElementById(`${chainId}-chain-id`);
+        
+        if (networkElement) networkElement.textContent = chain.network;
+        if (chainIdElement) chainIdElement.textContent = chain.chainId;
+
+        // Update JSON data
+        const jsonElement = document.getElementById(`${chainId}-json`);
+        if (jsonElement) {
+          if (data.error) {
+            jsonElement.textContent = `Error: ${data.error}`;
+            jsonElement.classList.add('text-red-500');
+          } else {
+            jsonElement.textContent = formatJsonForDisplay(data.data || data);
+            jsonElement.classList.remove('text-red-500');
+          }
+        }
+      };
+
+      // Handle blockchain data updates
+      socket.on('blockchain-update', (data) => {
+        Object.keys(BLOCKCHAINS).forEach(chainId => {
+          if (data[chainId]) {
+            updateBlockchainCard(chainId, data[chainId]);
+          }
+        });
+      });
 
       // Initial data load
       fetch('/api/blockchain-data')
