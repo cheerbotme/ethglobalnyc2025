@@ -1,8 +1,16 @@
-<<<<<<< HEAD
+# The Flow x402 Cheerbot aka the ETHGlobal NYC 2025 Cheerbot Build
 
 <img width="1024" height="1024" alt="ETHGlobal_Cheerbot" src="https://github.com/user-attachments/assets/12a70025-8231-421d-aead-2ce2e8177420" />
 
-# The Flow x402 Cheerbot aka the ETHGlobal NYC 2025 Cheerbot Build
+## contextual links
+
+[2minutepitch.cheerbot.org](http://2minutepitch.cheerbot.org)
+
+[3minutepitch.cheerbot.org](http://3minutepitch.cheerbot.org)
+
+[proto ERC 7827](https://arbiscan.io/address/0x8dcbc12efe584e24592d07a81bd6f6450def1052#code)
+
+[MegaZu deck](https://docs.google.com/presentation/d/1zW4OyzT3wvKzafJfaEAlNCTtUXd-3JhwKGWeZuHefJ0/edit?usp=sharing)
 
 ## Raspberry Pi instructions
 
@@ -27,7 +35,22 @@ We tested tailscale as an alternative to our hotspot solution. However, without 
 <img width="424" height="336" alt="image" src="https://github.com/user-attachments/assets/ae28776a-c671-4a6b-9f76-629164f43ab9" />
 
 4. Exit edit settings, then click yes to apply OS customization. Follow through to flash the SD.
- 
+
+### install the "startup engineering" dotfiles
+
+1. Plug the SD into the Raspberry Pi, then plug it in.
+
+2. Wait until the Pi joins your laptop's or desktop's wifi then ssh into it with 
+
+3. Enter the `git clone https://github.com/bestape/.0.sh` command.
+
+4. Enter the `cd .0.sh` command.
+
+5. Enter the `./setup.sh` command and follow the instructions.
+
+6. Exit the Pi and log back in for the new shell.
+
+### install Pimoroni Unicorn HD
 
 =======
 # ethglobal-nyc-25
