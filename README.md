@@ -40,6 +40,8 @@ We tested tailscale as an alternative to our hotspot solution. However, without 
 
 ### install the "startup engineering" dotfiles
 
+These dotfiles are forked from Balaji's original [Startup Engineering](https://github.com/startup-class/dotfiles) dotfiles.
+
 1. Plug the SD into the Raspberry Pi, then plug it in.
 
 2. Wait until the Pi joins your laptop's or desktop's wifi then ssh into it with whatever you set local to. In our case, that's `ssh bestape@cheer.local`.
