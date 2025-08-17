@@ -34,8 +34,58 @@ app.get('/api/blockchain-data', async (req, res) => {
   }
 });
 
-// Socket.io connection
+// HTTP server for handling requests
+const httpServer = http.createServer((req, res) => {
+  // Handle legacy chat requests
+  if (req.url === '/ETHGlobal' && req.method === 'POST') {
+    let body = '';
+    req.on('data', chunk => {
+      body += chunk.toString();
+    });
+    req.on('end', () => {
+      try {
+        const message = JSON.parse(body);
+        if (message && message.message) {
+          // Create message object
+          const msgObj = {
+            message: message.message,
+            sender: message.messenger || 'User',
+            timestamp: new Date().toISOString()
+          };
+          
+          // Add to session messages
+          sessionMessages.push(msgObj);
+          
+          // Broadcast to all connected clients
+          io.emit('chat-message', msgObj);
+        }
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ status: 'ok' }));
+      } catch (e) {
+        console.error('Error handling chat message:', e);
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Invalid message format' }));
+      }
+    });
+  } else {
+    // Serve static files
+    express.static(__dirname)(req, res, () => {
+      res.statusCode = 404;
+      res.end('Not found');
+    });
+  }
+});
+
+// In-memory storage for current session messages
+const sessionMessages = [];
+
+// Socket.IO for real-time updates
+io.attach(httpServer);
+
+// Handle new connections
 io.on('connection', (socket) => {
+  // Send message history to newly connected client
+  socket.emit('chat-history', sessionMessages);
   console.log('Client connected');
   
   // Send initial blockchain data
@@ -67,10 +117,20 @@ async function updateBlockchainData(socket) {
   }
 }
 
-// Start server
+// Start the HTTP server
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
+httpServer.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
+  console.log(`Visit http://localhost:${PORT} in your browser`);
+});
+
+// Handle server errors
+httpServer.on('error', (error) => {
+  if (error.code === 'EADDRINUSE') {
+    console.error(`Port ${PORT} is already in use. Please try a different port.`);
+    process.exit(1);
+  }
+  console.error('Server error:', error);
 });
 
 // Legacy chat function
