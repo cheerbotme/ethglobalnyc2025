@@ -1,120 +1,248 @@
 
 <!doctype html>
-<html>
+<html lang="en">
   <head>
-	<meta charset="utf-8">
-	<meta name="monetization" content="YOUR_PAYMENT_POINTER" >
-	<title>Cheerbot remote</title>
-	<style>
-	  * {
-		  margin: 0
-		  ; padding: 0
-		  ; box-sizing: border-box
-		  ;
-	  }
-	  body {
-		  background: gray
-		  ; font: 16px Helvetica, Arial
-		  ; 
-	  }
-	  form {
-		  background: white
-		  ; padding: 3px
-		  ; position: fixed
-		  ; bottom: 0
-		  ; width: 100%
-		  ;
-	  }
-	  form input {
-		  border: 0
-		  ; padding: 10px
-		  ; width: 90%
-		  ; margin-right: .5%
-		  ;
-	  }
-	  form button {
-		  width: 9%
-		  ; background: lightgray
-		  ; border: none
-		  ; padding: 10px
-		  ;
-	  }
-	  #in {
-		  list-style-type: none
-		  ; margin: 0
-		  ; padding: 0
-		  ;
-	  }
-	  #in li { 
-		  padding: 5px 10px
-		  ;
-	  }
-	  #in li:nth-child(odd) {
-		  background: white
-		  ;
-	  }
-	  #in li:nth-child(even) {
-		  background: lightgray
-		  ;
-	  }
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="monetization" content="YOUR_PAYMENT_POINTER">
+    <title>Cheerbot Remote Control</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+      .blockchain-card {
+        transition: all 0.3s ease;
+      }
+      .blockchain-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      }
+      .last-updated {
+        font-size: 0.75rem;
+        color: #6b7280;
+      }
 	</style>
   </head>
-  <body>
-	<script src="/socket.io/socket.io.js"></script>
-	<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
-	<script>
-	  $( function socket() {
-		  function post( $0 ) {
-			  _0.count ++
-			  ; _0.jquery( '#in' ).append(
-				  '<li id="readline-' + _0.count
-					  + '"><pre>' + $0 + '</pre>'
-			  )
-			  ;
-		  }
-		  function submit( $0 ) {
-			  $0.preventDefault()
-			  ;
-//			  if ( _0.doc.monetization ) {
-				  _0.io.emit(
-					  'message'
-					  , _0.jquery( '#out' )
-						  .val()
-				  )
-				  ; _0.jquery( '#out' ).val( '' )
-				  ; return false
-				  ;
-/**			  } else {
-				  _0.post(
-					  'install Coil for'
-						  + ' remote control'
-				  )
-				  ;
-			  }
-**/		  }
-		  const _0 = new Socket
-		  ; _0.jquery( 'form' ).submit(
-			  _0.submit
-		  )
-		  ; _0.io.on( 'message', _0.post )
-		  ;
-		  function Socket() {
-			  this.count = 0
-			  ; this.doc = document
-			  ; this.io = io()
-			  ; this.jquery = $
-			  ; this.post = post
-			  ; this.submit = submit
-			  ;
-		  }
-	  })
-	  ;
-	  </script>
-	<ul id="in"></ul>
-	<br /><br />
-	<form action="">
-	  <input id="out" autocomplete="off" />
-	  <button>send</button>
-	</form>
+  <body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+      <header class="text-center mb-12">
+        <h1 class="text-3xl font-bold text-gray-800 mb-2">Cheerbot Remote Control</h1>
+        <p class="text-gray-600">Monitoring ERC7827 Contracts on Flow and Katana</p>
+      </header>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <!-- Flow Blockchain Card -->
+        <div class="blockchain-card bg-white rounded-lg shadow-md p-6">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-xl font-semibold text-blue-600">Flow Mainnet</h2>
+            <span class="px-3 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">
+              Connected
+            </span>
+          </div>
+          <div class="space-y-4">
+            <div>
+              <p class="text-sm text-gray-500">Contract Address</p>
+              <p class="font-mono text-sm break-all">0x04B386e36F89E5bB568295779089E91ded070057</p>
+            </div>
+            <div class="grid grid-cols-1 gap-2">
+              <div>
+                <p class="text-sm text-gray-500">Network</p>
+                <p id="flow-network" class="font-medium">-</p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500">Chain ID</p>
+                <p id="flow-chain-id" class="font-medium">-</p>
+              </div>
+            </div>
+            <div class="pt-4 border-t border-gray-100">
+              <p class="text-sm text-gray-500">Last Updated</p>
+              <p id="flow-updated" class="text-sm">-</p>
+            </div>
+            <div class="pt-4 border-t border-gray-100">
+              <p class="text-sm text-gray-500 font-medium mb-1">JSON Data</p>
+              <pre id="flow-json" class="text-xs bg-gray-50 p-2 rounded overflow-auto max-h-40">Loading...</pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- Katana Blockchain Card -->
+        <div class="blockchain-card bg-white rounded-lg shadow-md p-6">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-xl font-semibold text-purple-600">Katana Tatara</h2>
+            <span class="px-3 py-1 bg-purple-100 text-purple-800 text-xs font-medium rounded-full">
+              Connected
+            </span>
+          </div>
+          <div class="space-y-4">
+            <div>
+              <p class="text-sm text-gray-500">Contract Address</p>
+              <p class="font-mono text-sm break-all">0x77331C208e7a6d4C05b0A0f87dB2Df9f154321a8</p>
+            </div>
+            <div class="grid grid-cols-1 gap-2">
+              <div>
+                <p class="text-sm text-gray-500">Network</p>
+                <p id="katana-network" class="font-medium">-</p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500">Chain ID</p>
+                <p id="katana-chain-id" class="font-medium">-</p>
+              </div>
+            </div>
+            <div class="pt-4 border-t border-gray-100">
+              <p class="text-sm text-gray-500">Last Updated</p>
+              <p id="katana-updated" class="text-sm">-</p>
+            </div>
+            <div class="pt-4 border-t border-gray-100">
+              <p class="text-sm text-gray-500 font-medium mb-1">JSON Data</p>
+              <pre id="katana-json" class="text-xs bg-gray-50 p-2 rounded overflow-auto max-h-40">Loading...</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chat Section -->
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-xl font-semibold mb-4">Chat</h2>
+        <div class="space-y-4">
+          <div id="chat-messages" class="h-64 overflow-y-auto border rounded p-4 mb-4">
+            <!-- Messages will appear here -->
+          </div>
+          <form id="chat-form" class="flex space-x-2">
+            <input 
+              id="message-input" 
+              type="text" 
+              placeholder="Type your message..." 
+              class="flex-1 border rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              autocomplete="off"
+            >
+            <button 
+              type="submit" 
+              class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition-colors"
+            >
+              Send
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      // Initialize Socket.IO
+      const socket = io();
+      
+      // DOM Elements
+      const chatForm = document.getElementById('chat-form');
+      const messageInput = document.getElementById('message-input');
+      const chatMessages = document.getElementById('chat-messages');
+
+      // Handle chat form submission
+      chatForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const message = messageInput.value.trim();
+        if (message) {
+          socket.emit('message', message);
+          messageInput.value = '';
+        }
+      });
+
+      // Handle incoming chat messages
+      socket.on('message', (data) => {
+        const messageElement = document.createElement('div');
+        messageElement.className = 'mb-2 p-2 bg-gray-50 rounded';
+        messageElement.textContent = `${data.messenger}: ${data.message}`;
+        chatMessages.appendChild(messageElement);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      });
+
+      // Format JSON for display
+      const formatJsonForDisplay = (json) => {
+        if (!json) return 'No data available';
+        try {
+          // Handle both string and object JSON
+          const data = typeof json === 'string' ? JSON.parse(json) : json;
+          if (Object.keys(data).length === 0) return '{}';
+          return JSON.stringify(data, null, 2);
+        } catch (e) {
+          return String(json);
+        }
+      };
+
+      // Handle blockchain data updates
+      socket.on('blockchain-update', (data) => {
+        // Update Flow data
+        if (data.flow) {
+          const flowUpdated = document.getElementById('flow-updated');
+          if (flowUpdated) {
+            flowUpdated.textContent = formatTimestamp(data.timestamp);
+          }
+          
+          // Update network info if available
+          if (data.flow._metadata) {
+            const flowNetwork = document.getElementById('flow-network');
+            const flowChainId = document.getElementById('flow-chain-id');
+            
+            if (flowNetwork) flowNetwork.textContent = data.flow._metadata.network || 'Unknown';
+            if (flowChainId) flowChainId.textContent = data.flow._metadata.chainId || 'Unknown';
+          }
+          
+          // Show raw JSON data or error
+          const flowJsonElement = document.getElementById('flow-json');
+          if (flowJsonElement) {
+            if (data.flow.error) {
+              flowJsonElement.textContent = `Error: ${data.flow.error}`;
+              flowJsonElement.classList.add('text-red-500');
+            } else {
+              flowJsonElement.textContent = formatJsonForDisplay(data.flow.data || data.flow);
+              flowJsonElement.classList.remove('text-red-500');
+            }
+          }
+        }
+        
+        // Update Katana data
+        if (data.katana) {
+          const katanaUpdated = document.getElementById('katana-updated');
+          if (katanaUpdated) {
+            katanaUpdated.textContent = formatTimestamp(data.timestamp);
+          }
+          
+          // Update network info if available
+          if (data.katana._metadata) {
+            const katanaNetwork = document.getElementById('katana-network');
+            const katanaChainId = document.getElementById('katana-chain-id');
+            
+            if (katanaNetwork) katanaNetwork.textContent = data.katana._metadata.network || 'Unknown';
+            if (katanaChainId) katanaChainId.textContent = data.katana._metadata.chainId || 'Unknown';
+          }
+          
+          // Show raw JSON data or error
+          const katanaJsonElement = document.getElementById('katana-json');
+          if (katanaJsonElement) {
+            if (data.katana.error) {
+              katanaJsonElement.textContent = `Error: ${data.katana.error}`;
+              katanaJsonElement.classList.add('text-red-500');
+            } else {
+              katanaJsonElement.textContent = formatJsonForDisplay(data.katana.data || data.katana);
+              katanaJsonElement.classList.remove('text-red-500');
+            }
+          }
+        }
+      });
+
+      // Format timestamp
+      function formatTimestamp(timestamp) {
+        if (!timestamp) return '-';
+        const date = new Date(timestamp);
+        return date.toLocaleTimeString();
+      }
+
+      // Initial data load
+      fetch('/api/blockchain-data')
+        .then(response => response.json())
+        .then(data => {
+          socket.emit('blockchain-update', data);
+        })
+        .catch(error => {
+          console.error('Error loading initial data:', error);
+        });
+    </script>
   </body>
 </html>

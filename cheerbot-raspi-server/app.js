@@ -1,5 +1,80 @@
-#! /usr/bin/env node
-function chat( $0, $1 ) {
+#!/usr/bin/env node
+const express = require('express');
+const http = require('http');
+const socketIo = require('socket.io');
+const path = require('path');
+const flowService = require('./services/flowService');
+const katanaService = require('./services/katanaService');
+
+// Initialize Express app
+const app = express();
+const server = http.createServer(app);
+const io = socketIo(server);
+
+// Middleware
+app.use(express.static(__dirname));
+app.use(express.json());
+
+// Routes
+app.get('/api/blockchain-data', async (req, res) => {
+  try {
+    const [flowData, katanaData] = await Promise.all([
+      flowService.getContractData(),
+      katanaService.getContractData()
+    ]);
+    
+    res.json({
+      flow: flowData,
+      katana: katanaData,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Error fetching blockchain data:', error);
+    res.status(500).json({ error: 'Failed to fetch blockchain data' });
+  }
+});
+
+// Socket.io connection
+io.on('connection', (socket) => {
+  console.log('Client connected');
+  
+  // Send initial blockchain data
+  updateBlockchainData(socket);
+  
+  // Set up polling for updates (every 30 seconds)
+  const interval = setInterval(() => updateBlockchainData(socket), 30000);
+  
+  socket.on('disconnect', () => {
+    console.log('Client disconnected');
+    clearInterval(interval);
+  });
+});
+
+async function updateBlockchainData(socket) {
+  try {
+    const [flowData, katanaData] = await Promise.all([
+      flowService.getContractData(),
+      katanaService.getContractData()
+    ]);
+    
+    socket.emit('blockchain-update', {
+      flow: flowData,
+      katana: katanaData,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Error updating blockchain data:', error);
+  }
+}
+
+// Start server
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
+
+// Legacy chat function
+function chat($0, $1) {
 	function out( $0, $1 ) {
 		if ( $0 ) {
 			console.warn( $0 )
@@ -111,13 +186,13 @@ function message( $0 ) {
 		;
 	}
 }
-function server() {
+function legacyServer() {
 	const _1 = new Server
 	; _1.server = _1.http( _0.chat )
 		  .listen( _0.port, '0.0.0.0', () => {
 			  console.log(
 				  'shaking hands along port '
-					  + _0.port
+				  + _0.port
 			  )
 			  ;
 		  } )
@@ -145,6 +220,6 @@ function App() {
 	; this.connect = connect
 	; this.message = message
 	; this.port = 3000
-	; this.server = server
+	; this.server = legacyServer
 	;
 }

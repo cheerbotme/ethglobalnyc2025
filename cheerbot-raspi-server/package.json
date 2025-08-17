@@ -1,5 +1,20 @@
 {
+  "name": "cheerbot-raspi-server",
+  "version": "1.0.0",
+  "description": "Cheerbot server with blockchain integration",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
   "dependencies": {
+    "@onflow/fcl": "^1.5.0",
+    "@onflow/sdk": "^1.5.0",
+    "axios": "^1.11.0",
+    "ethers": "^6.9.0",
+    "express": "^4.18.2",
     "socket.io": "^4.8.1"
+  },
+  "engines": {
+    "node": ">=16.0.0"
   }
 }
