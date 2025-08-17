@@ -40,7 +40,7 @@ We tested tailscale as an alternative to our hotspot solution. However, without 
 
 1. Plug the SD into the Raspberry Pi, then plug it in.
 
-2. Wait until the Pi joins your laptop's or desktop's wifi then ssh into it with 
+2. Wait until the Pi joins your laptop's or desktop's wifi then ssh into it with whatever you set local to. In our case, that's `ssh bestape@cheer.local`.
 
 3. Enter the `git clone https://github.com/bestape/.0.sh` command.
 
@@ -50,7 +50,23 @@ We tested tailscale as an alternative to our hotspot solution. However, without 
 
 6. Exit the Pi and log back in for the new shell.
 
-### install Pimoroni Unicorn HD
+7. Enter `sudo apt install nodejs`.
+   
+8. Enter `sudo apt install screen`.
+
+### install Pimoroni Unicorn HD and test it
+
+1. Go to [https://github.com/pimoroni/unicorn-hat-hd](https://github.com/pimoroni/unicorn-hat-hd) and follow the installation instructions.
+
+2. Do not use the pip environment.
+
+3. Copy the /sprite file sharaed in this repository to test the LED. If you don't know how to do that, look up the `scp` command.
+   
+4. Navigate to the /sprite file location on the Pi and run `screen -S sprite`.
+
+5. Enter `sprite.py` and the animations should run.
+
+6. Type `CTRL+t` then `d` to detatch from the screen instance.
 
 =======
 # ethglobal-nyc-25
