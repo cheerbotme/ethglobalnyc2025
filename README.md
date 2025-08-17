@@ -12,11 +12,13 @@
 
 [MegaZu deck](https://docs.google.com/presentation/d/1zW4OyzT3wvKzafJfaEAlNCTtUXd-3JhwKGWeZuHefJ0/edit?usp=sharing)
 
+[eth-lightShow](https://github.com/kaustavha/eth-lightShow-uottahack/blob/b1ecba5ea6d9ce3682b3eb1ed087014208e95395/contracts/1OnOff.sol)
+
 ## Raspberry Pi instructions
 
 This build uses a Raspberry Pi Zero 2 W.
 
-### tailscale failure
+### tailscale on community wifi failure (still need hotspot)
 
 We tested tailscale as an alternative to our hotspot solution. However, without access to ETHGlobal's router, we couldn't build out our hardware tech stack in this area. If it worked, that'd have been fine. But we couldn't troubleshoot because we didn't have access to router information. 
 
@@ -50,23 +52,63 @@ We tested tailscale as an alternative to our hotspot solution. However, without 
 
 6. Exit the Pi and log back in for the new shell.
 
-7. Enter `sudo apt install nodejs`.
+7. Enter `sudo apt install curl`.
+
+8. Enter `sudo apt install emacs`.
+
+9. Enter `sudo apt install nodejs`.
    
-8. Enter `sudo apt install screen`.
+10. Enter `sudo apt install screen`.
 
 ### install Pimoroni Unicorn HD and test it
 
-1. Go to [https://github.com/pimoroni/unicorn-hat-hd](https://github.com/pimoroni/unicorn-hat-hd) and follow the installation instructions.
+1. Enter `screen -S sprite`.
 
-2. Do not use the pip environment.
+2. Go to [https://github.com/pimoroni/unicorn-hat-hd](https://github.com/pimoroni/unicorn-hat-hd) and follow the installation instructions.
 
-3. Copy the /sprite file sharaed in this repository to test the LED. If you don't know how to do that, look up the `scp` command.
+3. Do not use the pip environment.
+
+4. Copy the /sprite file sharaed in this repository to test the LED. If you don't know how to do that, look up the `scp` command.
    
-4. Navigate to the /sprite file location on the Pi and run `screen -S sprite`.
+5. Navigate to the /sprite file location on the RPi and run `screen -S sprite`.
 
-5. Enter `sprite.py` and the animations should run.
+6. Enter `sprite.py` and the animations should run.
 
-6. Type `CTRL+t` then `d` to detatch from the screen instance.
+7. Type `CTRL+t` then `d` to detatch from the screen instance.
+
+### install tailscale and host a website
+
+1. Enter `screen -S website`
+
+2. Enter `curl -fsSL https://tailscale.com/install.sh | sh` and follow the instructions.
+
+3. Enter `git clone https://github.com/cheerbotme/webmonetization.git`.
+
+4. Enter `em webmonetization/cheerbot/app.js`.
+
+5. Change the `port` value in `App` to `'0.0.0.0'`.
+
+6. Change `.listen( _0.port, () => {` to `.listen( _0.port, '0.0.0.0', () => {`.
+
+7. Change the `url` value in `Chat` to `ETHGlobal`.
+
+8. Enter `sudo apt install npm`.
+
+9. Enter `npm install socket.io`.
+
+11. Enter `chmod 774 app.js`.
+
+12. Enter `./app.js`.
+
+13. In your laptop or desktop that is connected to the same tailscale server, look up the RPi's tailscale IP and then enter `http://<YOUR RPi's TAILSCALE IP>:3000/ETHGlobal` into your address bar.
+
+It won't work out of the box because it relies on Coil. So, if you try to type something it will give you this message:
+
+<img width="611" height="261" alt="image" src="https://github.com/user-attachments/assets/1aa3a1a1-0ae6-456e-ba25-594441358d55" />
+
+You can test it by commenting out these sections of `index.html`:
+
+<img width="514" height="495" alt="image" src="https://github.com/user-attachments/assets/08f6db61-9461-490f-a783-d63029050e42" />
 
 =======
 # ethglobal-nyc-25
