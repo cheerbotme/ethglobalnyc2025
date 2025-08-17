@@ -154,25 +154,64 @@
         }
       };
 
-      // Handle chat form submission
-      chatForm?.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const message = messageInput?.value?.trim();
-        if (message) {
-          socket.emit('message', message);
-          messageInput.value = '';
-        }
-      });
-
-      // Handle incoming chat messages
-      socket.on('message', (data) => {
+      // Function to add a message to the chat UI
+      function addMessageToChat(data) {
         if (!chatMessages) return;
         const messageElement = document.createElement('div');
         messageElement.className = 'mb-2 p-2 bg-gray-50 rounded';
-        messageElement.textContent = `${data.messenger}: ${data.message}`;
+        
+        // Format timestamp if available
+        const timestamp = data.timestamp ? new Date(data.timestamp).toLocaleTimeString() : '';
+        messageElement.innerHTML = `
+          <div class="flex justify-between text-xs text-gray-500 mb-1">
+            <span class="font-medium">${data.sender || 'User'}</span>
+            <span>${timestamp}</span>
+          </div>
+          <div class="text-gray-800">${data.message}</div>
+        `;
+        
         chatMessages.appendChild(messageElement);
         chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
+      
+      // Handle incoming chat messages
+      socket.on('chat-message', (data) => {
+        addMessageToChat(data);
       });
+      
+      // Handle chat history when first connecting
+      socket.on('chat-history', (messages) => {
+        if (!messages || !messages.length) return;
+        messages.forEach(msg => addMessageToChat(msg));
+      });
+
+      // Handle chat form submission
+      if (chatForm) {
+        chatForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const message = messageInput?.value?.trim();
+          if (message) {
+            try {
+              // Send message using legacy endpoint
+              await fetch('/ETHGlobal', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  message: message,
+                  messenger: 'You'
+                })
+              });
+              
+              // Clear the input
+              messageInput.value = '';
+            } catch (error) {
+              console.error('Error sending message:', error);
+            }
+          }
+        });
+      }
 
       // Format JSON for display
       const formatJsonForDisplay = (json) => {
